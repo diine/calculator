@@ -4,13 +4,16 @@
  *@version 1.0
  */
  import java.awt.BorderLayout;
- import java.awt.Font;
- import java.awt.Color;
- import javax.swing.JFrame;
- import javax.swing.JPanel;
- import javax.swing.JLabel;
- import javax.swing.JButton;
- import java.awt.GridLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
  
  public class Fenetre extends JFrame{
 /**
@@ -30,14 +33,17 @@
 	 */
 	private JPanel pan2= new JPanel();
 	/**
-	 * le layout manager de pan1
+	 *  layout manager de pan1
 	 */
 	GridLayout grid1= new GridLayout(4,3);
 	/**
-	 * le layout manager de pan2
+	 *  layout manager de pan2
 	 */
 	GridLayout grid2= new GridLayout(5,1);
-//private BorderLayout BorderLayout= new BorderLayout(); 
+	/**
+	 *police d'affichage à l'ecran 
+	 */
+	Font police = new Font("Arial",Font.BOLD,18);
 	/** 
 	 * Tableau contenant les boutton du pan1
 	 */
@@ -56,8 +62,13 @@
 	/**
 	 * le label pour l'ecran
 	 */
-	private JLabel label=new JLabel("00000");
-	
+	private JLabel label=new JLabel("0");
+	/**
+	 *nombre 
+	 */
+	private double nombre=0, nombre1=0,nombre2=0;
+	private String resultat="0",resultat1="0",resultat2="0";
+	private boolean ope=false, add=false, sou=false, mul=false, div=false;
 	/**
 	 *Constructeur de la fenetre 
 	 */
@@ -99,8 +110,12 @@
 		pan1.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 5, 5, 5));
 		pan2.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 5, 5, 5));
 		
-		//création de la bordure de lécran
+		//création de la bordure de lécran 
 		screen.setBorder(javax.swing.BorderFactory.createLineBorder(Color.black, 2));
+		
+		//mise à jour de la police
+		label.setFont(police);
+		
 		
 		//positionnement du resultat à gauche de l'ecran
 		screen.add(label, BorderLayout.EAST);
@@ -109,12 +124,168 @@
 		container.add(screen, BorderLayout.NORTH);
 		container.add(pan1, BorderLayout.CENTER);
 		container.add(pan2, BorderLayout.EAST);
+		//affichage des boutons selectionnes on affiche pas = d'ou la limite du tableau à 11
+		for(int i=0;i<11;i++)
+			tableau1[i].addActionListener(new ViewButton());
 		
-
+		//mise à 0 de la machine
+		tableau2[0].addActionListener(new ViewButton());
+		
+		for(int i=1;i<=4;i++)
+			tableau2[i].addActionListener(new Operation());
+		tableau1[11].addActionListener(new Resultat());
+		
 		this.setContentPane(container);
 		this.setVisible(true);
 	}
 	
 	
+	
+	
+	
+	
+	private class ViewButton implements ActionListener{
+		
+		
+		public void actionPerformed(ActionEvent arg0){
+		
+		if(ope==false){
+			for(int i=0;i<9;i++){	
+				if(arg0.getSource()==tableau1[i]){
+					resultat1+=(i+1);
+					nombre1+=(i+1);
+					label.setText(resultat1.substring(1, resultat1.length())); //permet de ne pas afficher le 0 initial de resultat
+		}}
+		}else{
+			for(int i=0;i<9;i++){	
+				if(arg0.getSource()==tableau1[i]){
+					resultat2+=(i+1);
+					nombre2+=(i+1);
+					label.setText(resultat2.substring(1, resultat2.length()));
+		}}}
+			
+		
+		if(arg0.getSource()==tableau1[9] && ope==false){
+			resultat1+="0";
+			nombre1*=10;	
+			label.setText(resultat1.substring(1, resultat1.length()));
+		}
+		if(arg0.getSource()==tableau1[9] && ope==true){
+			resultat2+="0";
+			nombre2*=10;	
+			label.setText(resultat2.substring(1, resultat2.length()));
+			
+		}
+		//evite l'insertion de plusieurs points successifs mais ya un pb
+		if(arg0.getSource()==tableau1[10] && !dotIs(resultat1) && ope==false ){ 
+			resultat1+=".";
+			nombre1*=1.0;	
+			label.setText(resultat1.substring(1, resultat1.length()));
+		}
+		if(arg0.getSource()==tableau1[10] && !dotIs(resultat2) && ope==true ){ 
+			resultat2+=".";
+			nombre2*=1.0;	
+			label.setText(resultat2.substring(1, resultat2.length()));
+		}
+			
+		if(arg0.getSource()==tableau2[0] ){
+			resultat1="0";
+			resultat2="0";
+			nombre1=0;
+			nombre2=0;
+			label.setText(resultat1);
+		}
+		
+		}
+	}
+	
+	private static boolean dotIs(String arg){
+		
+		int n=0;
+		n=arg.indexOf('.');
+		if(n!=-1)
+		return  true;
+		else return false;
+	}
 
+	private class Operation implements ActionListener{
+		
+		public void actionPerformed(ActionEvent arg0){
+			
+			if(arg0.getSource()==tableau2[1]){
+				add=true;
+				ope=true;	
+			}
+			if(arg0.getSource()==tableau2[2]){
+				sou=true;
+				ope=true;	
+		}
+			if(arg0.getSource()==tableau2[3]){
+				mul=true;
+				ope=true;	
+		}
+			if(arg0.getSource()==tableau2[4]){
+				div=true;
+				ope=true;	
+		}
+			
+		}
+	}
+	
+		private class Resultat implements ActionListener{
+		
+		public void actionPerformed(ActionEvent arg0){
+			if(arg0.getSource()==tableau1[11] && add==true){
+				
+				nombre1+=nombre2;
+				nombre2=0;
+				add=false;
+				ope=false;
+				resultat1=""+nombre1;
+				label.setText(resultat1); //afficher le resultat
+				//resultat1="0";
+				resultat2="0";
+				
+				
+			}
+			if(arg0.getSource()==tableau1[11] && sou==true){
+				
+				nombre1-=nombre2;
+				nombre2=0;
+				sou=false;
+				ope=false;
+				resultat1=""+nombre1;
+				label.setText(resultat1); //afficher le resultat
+				//resultat1="0";
+				resultat2="0";
+				
+			}
+			if(arg0.getSource()==tableau1[11] && mul==true){
+	
+				nombre1*=nombre2;
+				nombre2=0;
+				mul=false;
+				ope=false;
+				resultat1=""+nombre1;
+				label.setText(resultat1);
+				resultat2="0";
+				
+	
 }
+			if(arg0.getSource()==tableau1[11] && div==true){
+	
+				nombre1/=nombre2;
+				nombre2=0;
+				div=false;
+				ope=false;
+				resultat1=""+nombre1;
+				label.setText(resultat1);
+				resultat2="0";
+				//afficher le resultat
+	
+}
+}}
+		
+ }
+ 
+ 
