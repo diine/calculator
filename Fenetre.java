@@ -9,7 +9,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -133,6 +132,7 @@ import javax.swing.JPanel;
 		
 		for(int i=1;i<=4;i++)
 			tableau2[i].addActionListener(new Operation());
+		
 		tableau1[11].addActionListener(new Resultat());
 		
 		this.setContentPane(container);
@@ -151,18 +151,51 @@ import javax.swing.JPanel;
 		
 		if(ope==false){
 			for(int i=0;i<9;i++){	
-				if(arg0.getSource()==tableau1[i]){
+				if(arg0.getSource()==tableau1[i] && nombre1!=0 && !dotIs(resultat1)){//prends pas en compte les nombres a virgule
 					resultat1+=(i+1);
-					nombre1+=(i+1);
+					nombre1=nombre1*10 +(i+1);//warning nombre1*=10+i+1 fait d'abord l'operatio de droite et ensuite nombre1* le result
 					label.setText(resultat1.substring(1, resultat1.length())); //permet de ne pas afficher le 0 initial de resultat
-		}}
-		}else{
+		}
+				if(arg0.getSource()==tableau1[i] && nombre1!=0 && dotIs(resultat1)){//prends en compte les nombres a virgule
+					resultat1+=(i+1);
+					nombre1+=0.1*(i+1);
+					label.setText(resultat1.substring(1, resultat1.length()));
+				}
+				if(arg0.getSource()==tableau1[i] && nombre1==0 && !dotIs(resultat1)){//prends en compte les nombre a virgule
+					resultat1+=(i+1);
+					nombre1+=i+1;
+					label.setText(resultat1.substring(1, resultat1.length()));
+		}
+				if(arg0.getSource()==tableau1[i] && nombre1==0 && dotIs(resultat1)){//prends en compte les nombre a virgule
+					resultat1+=(i+1);
+					nombre1+=0.1*(i+1);
+					label.setText(resultat1.substring(1, resultat1.length()));}	
+		}
+		}
+		else{
 			for(int i=0;i<9;i++){	
-				if(arg0.getSource()==tableau1[i]){
+				if(arg0.getSource()==tableau1[i] && nombre2!=0 && !dotIs(resultat2)){
+					resultat2+=(i+1);
+					nombre2=nombre2*10 +(i+1); 
+					label.setText(resultat2.substring(1, resultat2.length()));
+		}
+				if(arg0.getSource()==tableau1[i] && nombre1!=0 && dotIs(resultat2)){//prends en compte les nombres a virgule
+					resultat2+=(i+1);
+					nombre2+=0.1*(i+1);
+					label.setText(resultat2.substring(1, resultat2.length()));
+				}
+				if(arg0.getSource()==tableau1[i] && nombre2==0 && !dotIs(resultat2) ){
 					resultat2+=(i+1);
 					nombre2+=(i+1);
 					label.setText(resultat2.substring(1, resultat2.length()));
-		}}}
+		}
+				if(arg0.getSource()==tableau1[i] && nombre2==0 && dotIs(resultat2) ){
+					resultat2+=(i+1);
+					nombre2+=0.1*(i+1);
+					label.setText(resultat2.substring(1, resultat2.length()));}
+		}
+			
+		}
 			
 		
 		if(arg0.getSource()==tableau1[9] && ope==false){
@@ -179,12 +212,22 @@ import javax.swing.JPanel;
 		//evite l'insertion de plusieurs points successifs mais ya un pb
 		if(arg0.getSource()==tableau1[10] && !dotIs(resultat1) && ope==false ){ 
 			resultat1+=".";
+			nombre1=nombre1*1.0;	
+			label.setText(resultat1.substring(1, resultat1.length()));
+		}
+		
+		if(arg0.getSource()==tableau1[10] && dotIs(resultat1) && ope==false ){ //gere l'affichage de plusieurs . qui est impossible
 			nombre1*=1.0;	
 			label.setText(resultat1.substring(1, resultat1.length()));
 		}
+		
 		if(arg0.getSource()==tableau1[10] && !dotIs(resultat2) && ope==true ){ 
 			resultat2+=".";
-			nombre2*=1.0;	
+			nombre2=nombre2*1.0;	
+			label.setText(resultat2.substring(1, resultat2.length()));
+		}
+		if(arg0.getSource()==tableau1[10] && dotIs(resultat2) && ope==true ){ 
+			nombre2=nombre2*1.0;	
 			label.setText(resultat2.substring(1, resultat2.length()));
 		}
 			
@@ -273,15 +316,19 @@ import javax.swing.JPanel;
 	
 }
 			if(arg0.getSource()==tableau1[11] && div==true){
-	
-				nombre1/=nombre2;
+				try{
+				nombre1=nombre1/nombre2;
+				}catch(ArithmeticException e){
+					label.setText("error");
+				}
 				nombre2=0;
 				div=false;
 				ope=false;
 				resultat1=""+nombre1;
 				label.setText(resultat1);
 				resultat2="0";
-				//afficher le resultat
+				
+				
 	
 }
 }}
