@@ -3,7 +3,7 @@
  *@author Ach-raf IMOROU
  *@version 1.0
  */
- import java.awt.BorderLayout;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -15,16 +15,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
  
  public class Fenetre extends JFrame{
-/**
- * conteneur pricipale
- */
+	/**
+	 * conteneur pricipale
+	 */
 	private JPanel container= new JPanel();
 	/**
 	 * panneau contenant l'ecran
 	 */
 	private JPanel screen= new JPanel();
 	/**
-	 * panneau contenant les nombres
+	 * panneau contenant les chiffres
 	 */
 	private JPanel pan1= new JPanel();
 	/**
@@ -44,14 +44,14 @@ import javax.swing.JPanel;
 	 */
 	Font police = new Font("Arial",Font.BOLD,18);
 	/** 
-	 * Tableau contenant les boutton du pan1
+	 * Tableau contenant les bouttons du pan1
 	 */
 	private JButton[] tableau1= {
 	new JButton("1"),new JButton("2"),new JButton("3"),new JButton("4"),
 	new JButton("5"),new JButton("6"),new JButton("7"),new JButton("8"),
 	new JButton("9"),new JButton("0"),new JButton("."),new JButton("=")};
 	/** 
-	 * Tableau contenant les boutton du pan2
+	 * Tableau contenant les bouttons du pan2
 	 */
 	private JButton[] tableau2= {
 			new JButton("C"),new JButton("+"),
@@ -63,41 +63,50 @@ import javax.swing.JPanel;
 	 */
 	private JLabel label=new JLabel("0");
 	/**
-	 *nombre 
+	 *nombre 1 & 2
 	 */
-	private double nombre=0, nombre1=0,nombre2=0;
-	private String resultat="0",resultat1="0",resultat2="0";
-	private boolean ope=false, add=false, sou=false, mul=false, div=false;
+	private double nombre1=0,nombre2=0;
+	/**
+	 *resultat 1 & 2
+	 */
+	private String resultat1="0",resultat2="0";
+	/**
+	 *boolean pour les operations
+	 */
+	private boolean ope=false, add=false, sou=false, mul=false, div=false; 
 	/**
 	 *Constructeur de la fenetre 
 	 */
 	public Fenetre(){
 		
 		this.setTitle("CALCULATOR");
-		this.setSize(220, 300);
+		this.setSize(240, 300);
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		grid1.setHgap(5);
-		grid1.setVgap(10);
+		grid1.setHgap(5); //espacement horizontal
+		grid1.setVgap(10);//espacement vertical
 		
-		container.setLayout(new BorderLayout());
+		container.setLayout(new BorderLayout()); //définition du layout
 		
 		//panneau 1
 		pan1.setLayout(grid1);
 		for(int i=0;i<12;i++)
 			pan1.add(tableau1[i]);
+		
 		for(int i=0;i<12;i++)
 			tableau1[i].setBackground(Color.orange);
 		
 		//panneau 2
 		grid2.setHgap(5);
 		grid2.setVgap(8);
-		tableau2[0].setBackground(Color.red);
+		tableau2[0].setBackground(Color.red); //boutton C pour remettre a zero
 		
 		for(int i=1;i<5;i++)
 			tableau2[i].setBackground(Color.cyan);
+		
 		pan2.setLayout(grid2);
+		
 		for(int i=0;i<5;i++)
 			pan2.add(tableau2[i]);
 		
@@ -123,35 +132,36 @@ import javax.swing.JPanel;
 		container.add(screen, BorderLayout.NORTH);
 		container.add(pan1, BorderLayout.CENTER);
 		container.add(pan2, BorderLayout.EAST);
-		//affichage des boutons selectionnes on affiche pas = d'ou la limite du tableau à 11
+		
+		//affichage des boutons selectionnes; on affiche pas "=" d'ou la limite du tableau à 11
 		for(int i=0;i<11;i++)
 			tableau1[i].addActionListener(new ViewButton());
 		
 		//mise à 0 de la machine
 		tableau2[0].addActionListener(new ViewButton());
 		
-		for(int i=1;i<=4;i++)
+		//ajout des listener
+		for(int i=1;i<=4;i++){
 			tableau2[i].addActionListener(new Operation());
+			tableau2[i].addActionListener(new Resultat());
+		}
 		
-		tableau1[11].addActionListener(new Resultat());
+		tableau1[11].addActionListener(new Resultat()); //ajout du listener
 		
 		this.setContentPane(container);
 		this.setVisible(true);
 	}
 	
 	
-	
-	
-	
-	
+	//classe interne 
 	private class ViewButton implements ActionListener{
 		
-		
+		@Override
 		public void actionPerformed(ActionEvent arg0){
 		
 		if(ope==false){
 			for(int i=0;i<9;i++){	
-				if(arg0.getSource()==tableau1[i] && nombre1!=0 && !dotIs(resultat1)){//prends pas en compte les nombres a virgule
+				if(arg0.getSource()==tableau1[i] && nombre1!=0 && !dotIs(resultat1)){//prends pas en compte les nombres a virgule et 2chiffres
 					resultat1+=(i+1);
 					nombre1=nombre1*10 +(i+1);//warning nombre1*=10+i+1 fait d'abord l'operatio de droite et ensuite nombre1* le result
 					label.setText(resultat1.substring(1, resultat1.length())); //permet de ne pas afficher le 0 initial de resultat
@@ -161,7 +171,7 @@ import javax.swing.JPanel;
 					nombre1+=0.1*(i+1);
 					label.setText(resultat1.substring(1, resultat1.length()));
 				}
-				if(arg0.getSource()==tableau1[i] && nombre1==0 && !dotIs(resultat1)){//prends en compte les nombre a virgule
+				if(arg0.getSource()==tableau1[i] && nombre1==0 && !dotIs(resultat1)){//ne prends pas en compte les nombre a virgule
 					resultat1+=(i+1);
 					nombre1+=i+1;
 					label.setText(resultat1.substring(1, resultat1.length()));
@@ -241,7 +251,10 @@ import javax.swing.JPanel;
 		
 		}
 	}
-	
+	/**
+	 *methode permettant de savoir si le nombre contient ou pas une virgule 
+	 * @param arg
+	 */
 	private static boolean dotIs(String arg){
 		
 		int n=0;
@@ -252,13 +265,14 @@ import javax.swing.JPanel;
 	}
 
 	private class Operation implements ActionListener{
-		
+		@Override
 		public void actionPerformed(ActionEvent arg0){
 			
 			if(arg0.getSource()==tableau2[1]){
 				add=true;
 				ope=true;	
 			}
+			
 			if(arg0.getSource()==tableau2[2]){
 				sou=true;
 				ope=true;	
@@ -276,9 +290,9 @@ import javax.swing.JPanel;
 	}
 	
 		private class Resultat implements ActionListener{
-		
+		@Override
 		public void actionPerformed(ActionEvent arg0){
-			if(arg0.getSource()==tableau1[11] && add==true){
+			if((arg0.getSource()==tableau1[11] || arg0.getSource()==tableau2[1]) && add==true){
 				
 				nombre1+=nombre2;
 				nombre2=0;
@@ -286,12 +300,11 @@ import javax.swing.JPanel;
 				ope=false;
 				resultat1=""+nombre1;
 				label.setText(resultat1); //afficher le resultat
-				//resultat1="0";
 				resultat2="0";
 				
-				
 			}
-			if(arg0.getSource()==tableau1[11] && sou==true){
+
+			if((arg0.getSource()==tableau1[11] || arg0.getSource()==tableau2[2]) && sou==true){
 				
 				nombre1-=nombre2;
 				nombre2=0;
@@ -299,11 +312,10 @@ import javax.swing.JPanel;
 				ope=false;
 				resultat1=""+nombre1;
 				label.setText(resultat1); //afficher le resultat
-				//resultat1="0";
 				resultat2="0";
 				
 			}
-			if(arg0.getSource()==tableau1[11] && mul==true){
+			if((arg0.getSource()==tableau1[11] || arg0.getSource()==tableau2[3]) && mul==true){
 	
 				nombre1*=nombre2;
 				nombre2=0;
@@ -312,25 +324,19 @@ import javax.swing.JPanel;
 				resultat1=""+nombre1;
 				label.setText(resultat1);
 				resultat2="0";
-				
-	
 }
-			if(arg0.getSource()==tableau1[11] && div==true){
-				try{
-				nombre1=nombre1/nombre2;
-				}catch(ArithmeticException e){
-					label.setText("error");
-				}
+			//utulisation d'un double pour les nombres donc la division par 0 donne infinity
+			if((arg0.getSource()==tableau1[11] || arg0.getSource()==tableau2[4]) && div==true){
+				
+				nombre1=nombre1/ nombre2;
 				nombre2=0;
 				div=false;
 				ope=false;
 				resultat1=""+nombre1;
 				label.setText(resultat1);
-				resultat2="0";
-				
-				
-	
-}
+				resultat2="0";}
+			
+
 }}
 		
  }
